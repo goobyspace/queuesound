@@ -5,6 +5,7 @@
 ## DefaultState: enabled
 ## SavedVariables: qsVariableArray
 ## Author: Gooby
+## X-Curse-Project-ID: 348102
 
 Utils.lua
 Config.lua
