@@ -6,6 +6,7 @@
 ## SavedVariables: qsVariableArray
 ## Author: Gooby
 ## X-Curse-Project-ID: 348102
+## X-Wago-ID: kGr0qY6y
 
 Utils.lua
 Config.lua
