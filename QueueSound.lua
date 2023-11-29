@@ -7,6 +7,7 @@ local QueueSound = core.QueueSound;
 
 local musicPlay
 local ramonesSoundHandle
+local battlefieldIDs = {};
 -------------------------------
 -- QueueSound
 -- in QueueSound we 1: Listen for events related to queue windows
@@ -55,26 +56,37 @@ local function arenaEventHandler(self, event, ...)
     -- PvP Checker
     local maxBattlefieldID = GetMaxBattlefieldID();
     for i = 1, maxBattlefieldID, 1 do
+        if battlefieldIDs[i] == nil then
+            battlefieldIDs[i] = false;
+        end
+
         local queueStatus, battlefieldType = core.QueueSound:arenaStatusChecker(i);
         if queueStatus == "confirm" then
             if battlefieldType == "ARENA" and arenaToggleState == true then
                 arenaPlayMusic(true, arenaSong)
+                battlefieldIDs[i] = true;
             end
             if battlefieldType == "RATEDSHUFFLE" and shuffleToggleState == true then
                 arenaPlayMusic(true, shuffleSong)
+                battlefieldIDs[i] = true;
             end
             if battlefieldType == "BATTLEGROUND" and bgToggleState == true then
                 arenaPlayMusic(true, bgSong)
+                battlefieldIDs[i] = true;
             end
             if battlefieldType == "BRAWLSOLORBG" and bgToggleState == true then
                 arenaPlayMusic(true, bgSong)
+                battlefieldIDs[i] = true;
             end
             if battlefieldType == "ARENASKIRMISH" and skrmToggleState == true then
                 arenaPlayMusic(true, skrmSong)
+                battlefieldIDs[i] = true;
             end
         end
-        if queueStatus ~= "confirm" then
+        --need to have some kind of "only stop if its the same i that started the music"
+        if queueStatus ~= "confirm" and battlefieldIDs[i] == true then
             arenaPlayMusic(false, nil)
+            battlefieldIDs[i] = false;
         end
     end
 
