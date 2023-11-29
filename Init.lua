@@ -13,7 +13,7 @@ local songPath = "Interface\\AddOns\\QueueSound\\"
 core.commands = {
     ["config"] = core.Config.Toggle,
     ["vars"] = function()
-        print(qsVariableArray)
+        print(core.utils.dump(qsVariableArray));
     end,
     ["help"] = function()
         print(" ")
@@ -61,9 +61,14 @@ local function VarChecker()
     if qsVariableArray == nil then
         qsVariableArray = {};
     end
+    --new state
+    if qsVariableArray["qsShuffleState"] == nil then
+        qsVariableArray["qsShuffleState"] = true;
+    end
     --if theres no arena state: add the arena states
     if qsVariableArray["qsArenaState"] == nil then
         qsVariableArray["qsArenaState"] = true;
+        qsVariableArray["qsShuffleState"] = true;
         qsVariableArray["qsBGState"] = true;
         qsVariableArray["qsSKRMState"] = true;
         qsVariableArray["qsLFDState"] = true;
@@ -71,11 +76,12 @@ local function VarChecker()
     end
     --if theres no music states, add the music states
     -- if qsVariableArray["qsArenaSong"] == nil then
-        qsVariableArray["qsArenaSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-        qsVariableArray["qsBGSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-        qsVariableArray["qsSKRMSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-        qsVariableArray["qsLFDSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-        qsVariableArray["qsLFRSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsArenaSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsShuffleSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsBGSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsSKRMSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsLFDSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
+    qsVariableArray["qsLFRSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
     -- end
 end
 
@@ -91,12 +97,12 @@ local function QSDebugMode(debugMode)
         end
 
         for i = 1, NUM_CHAT_WINDOWS do
-            _G["ChatFrame" ..i.. "EditBox"]:SetAltArrowKeyMode(false)
+            _G["ChatFrame" .. i .. "EditBox"]:SetAltArrowKeyMode(false)
         end
     end
 end
 
-function core:InitEventHandler (event, name)
+function core:InitEventHandler(event, name)
     if name ~= "QueueSound" then return end
     core.QueueSound.arenaSoundInit()
     VarChecker()
@@ -112,4 +118,4 @@ end
 
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
-events:SetScript("OnEvent",core.InitEventHandler)
+events:SetScript("OnEvent", core.InitEventHandler)

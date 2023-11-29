@@ -19,6 +19,9 @@ function Config:VarStates(bgType)
     if bgType == "arena" then
         qsVariableArray["qsArenaState"] = not qsVariableArray["qsArenaState"]
     end
+    if bgType == "skrm" then
+        qsVariableArray["qsShuffleState"] = not qsVariableArray["qsShuffleState"]
+    end
     if bgType == "bg" then
         qsVariableArray["qsBGState"] = not qsVariableArray["qsBGState"]
     end
@@ -31,46 +34,60 @@ function Config:VarStates(bgType)
     if bgType == "lfr" then
         qsVariableArray["qsLFRState"] = not qsVariableArray["qsLFRState"]
     end
-    return qsVariableArray["qsArenaState"], qsVariableArray["qsBGState"], qsVariableArray["qsSKRMState"], qsVariableArray["qsLFDState"], qsVariableArray["qsLFRState"]
+
+    return qsVariableArray["qsArenaState"], qsVariableArray["qsShuffleState"], qsVariableArray["qsBGState"],
+        qsVariableArray["qsSKRMState"], qsVariableArray["qsLFDState"], qsVariableArray["qsLFRState"]
 end
 
 function Config:MuscStates()
-    return qsVariableArray["qsArenaSong"],qsVariableArray["qsBGSong"],qsVariableArray["qsSKRMSong"],qsVariableArray["qsLFDSong"],qsVariableArray["qsLFRSong"];
+    return qsVariableArray["qsArenaSong"], qsVariableArray["qsShuffleSong"], qsVariableArray["qsBGSong"],
+        qsVariableArray["qsSKRMSong"], qsVariableArray["qsLFDSong"], qsVariableArray["qsLFRSong"];
 end
 
-function Config:CreateToggle(point, relativeFrame, relativePoint, text,toggleVar, bgType)
+function Config:CreateToggle(point, relativeFrame, relativePoint, text, toggleVar, bgType)
     local toggle = CreateFrame("CheckButton", nil, arenaSoundconfig, "UicheckButtonTemplate")
-    toggle:SetPoint(point, relativeFrame,relativePoint)
+    toggle:SetPoint(point, relativeFrame, relativePoint)
     toggle.text:SetText(text)
     toggle:SetChecked(toggleVar)
-    toggle:SetScript("OnClick",function() core.Config:VarStates(bgType) end)
+    toggle:SetScript("OnClick", function() core.Config:VarStates(bgType) end)
     return toggle;
 end
 
 function Config:CreateMenu()
     -- creating the main frame + its location
     arenaSoundconfig = CreateFrame("Frame", "arenaSoundUIFrame", UIParent, "BasicFrameTemplateWithInset")
-    arenaSoundconfig:SetSize(200, 200)
+    arenaSoundconfig:SetSize(200, 230)
     arenaSoundconfig:SetPoint("CENTER", UIParent, "CENTER", 0, 120)
+
     -- title
     arenaSoundconfig.title = arenaSoundconfig:CreateFontString(nil, "OVERLAY")
     arenaSoundconfig.title:SetFontObject("GameFontHighlight")
     arenaSoundconfig.title:SetPoint("CENTER", arenaSoundconfig.TitleBg, "CENTER")
     arenaSoundconfig.title:SetText("Queue Sound Options")
+
     -- mainFrame
-    arenaSoundconfig.mainArea = CreateFrame("Frame",nil,arenaSoundconfig)
-    arenaSoundconfig.mainArea:SetSize(180,160)
-    arenaSoundconfig.mainArea:SetPoint("BOTTOM",arenaSoundconfig,"BOTTOM",0,10)
+    arenaSoundconfig.mainArea = CreateFrame("Frame", nil, arenaSoundconfig)
+    arenaSoundconfig.mainArea:SetSize(180, 190)
+    arenaSoundconfig.mainArea:SetPoint("BOTTOM", arenaSoundconfig, "BOTTOM", 0, 10)
+
     -- arenaToggle
-    arenaSoundconfig.arenaToggle = self:CreateToggle("TOPLEFT",arenaSoundconfig.mainArea,"TOPLEFT","Arena Queue Sound",qsVariableArray["qsArenaState"],"arena")
+    arenaSoundconfig.arenaToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.mainArea, "TOPLEFT", "Arena Queue Sound",
+        qsVariableArray["qsArenaState"], "arena");
+    -- skirmishtoggle
+    arenaSoundconfig.shuffleToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.arenaToggle, "BOTTOMLEFT",
+        "Solo Shufffle Queue Sound", qsVariableArray["qsSKRMState"], "skrm");
     -- bgToggle
-    arenaSoundconfig.bgToggle = self:CreateToggle("TOPLEFT",arenaSoundconfig.arenaToggle,"BOTTOMLEFT","Battleground Queue Sound",qsVariableArray["qsBGState"],"bg")
+    arenaSoundconfig.bgToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.shuffleToggle, "BOTTOMLEFT",
+        "Battleground Queue Sound", qsVariableArray["qsBGState"], "bg");
     -- skrmToggle
-    arenaSoundconfig.skrmToggle = self:CreateToggle("TOPLEFT",arenaSoundconfig.bgToggle,"BOTTOMLEFT","Skirmish Queue Sound",qsVariableArray["qsSKRMState"],"skrm")
+    arenaSoundconfig.skrmToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.bgToggle, "BOTTOMLEFT",
+        "Skirmish Queue Sound", qsVariableArray["qsSKRMState"], "skrm");
     -- lfdToggle
-    arenaSoundconfig.lfdToggle = self:CreateToggle("TOPLEFT",arenaSoundconfig.skrmToggle,"BOTTOMLEFT","Dungeon Queue Sound",qsVariableArray["qsLFDState"],"lfd")
+    arenaSoundconfig.lfdToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.skrmToggle, "BOTTOMLEFT",
+        "Dungeon Queue Sound", qsVariableArray["qsLFDState"], "lfd");
     --lfrToggle
-    arenaSoundconfig.lfrToggle = self:CreateToggle("TOPLEFT",arenaSoundconfig.lfdToggle,"BOTTOMLEFT","LFR Queue Sound",qsVariableArray["qsLFRState"],"lfr")
+    arenaSoundconfig.lfrToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.lfdToggle, "BOTTOMLEFT", "LFR Queue Sound",
+        qsVariableArray["qsLFRState"], "lfr");
 
     arenaSoundconfig:Hide()
     return arenaSoundconfig

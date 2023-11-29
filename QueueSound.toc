@@ -4,8 +4,9 @@
 ## Version: 1.1
 ## DefaultState: enabled
 ## SavedVariables: qsVariableArray
-## Author: Baedril
+## Author: Gooby
 
+Utils.lua
 Config.lua
 QueueSound.lua
 Init.lua
