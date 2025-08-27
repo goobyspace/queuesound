@@ -6,89 +6,128 @@ core.Config = {}
 local Config = core.Config
 local arenaSoundconfig
 -------------------------------
--- Config
--- in config we 1: Create the actual configuration window
--- 2: Set our global bools depending on the toggles in the menu
--------------------------------
-function Config:Toggle()
-    local menu = arenaSoundconfig or Config:CreateMenu()
-    menu:SetShown(not menu:IsShown())
-end
-
-function Config:VarStates(bgType)
-    if bgType == "arena" then
-        qsVariableArray["qsArenaState"] = not qsVariableArray["qsArenaState"]
-    end
-    if bgType == "skrm" then
-        qsVariableArray["qsShuffleState"] = not qsVariableArray["qsShuffleState"]
-    end
-    if bgType == "bg" then
-        qsVariableArray["qsBGState"] = not qsVariableArray["qsBGState"]
-    end
-    if bgType == "skrm" then
-        qsVariableArray["qsSKRMState"] = not qsVariableArray["qsSKRMState"]
-    end
-    if bgType == "lfd" then
-        qsVariableArray["qsLFDState"] = not qsVariableArray["qsLFDState"]
-    end
-    if bgType == "lfr" then
-        qsVariableArray["qsLFRState"] = not qsVariableArray["qsLFRState"]
-    end
-
-    return qsVariableArray["qsArenaState"], qsVariableArray["qsShuffleState"], qsVariableArray["qsBGState"],
-        qsVariableArray["qsSKRMState"], qsVariableArray["qsLFDState"], qsVariableArray["qsLFRState"]
-end
-
-function Config:MuscStates()
-    return qsVariableArray["qsArenaSong"], qsVariableArray["qsShuffleSong"], qsVariableArray["qsBGSong"],
-        qsVariableArray["qsSKRMSong"], qsVariableArray["qsLFDSong"], qsVariableArray["qsLFRSong"];
-end
-
-function Config:CreateToggle(point, relativeFrame, relativePoint, text, toggleVar, bgType)
-    local toggle = CreateFrame("CheckButton", nil, arenaSoundconfig, "UicheckButtonTemplate")
-    toggle:SetPoint(point, relativeFrame, relativePoint)
-    toggle.text:SetText(text)
-    toggle:SetChecked(toggleVar)
-    toggle:SetScript("OnClick", function() core.Config:VarStates(bgType) end)
-    return toggle;
-end
 
 function Config:CreateMenu()
-    -- creating the main frame + its location
-    arenaSoundconfig = CreateFrame("Frame", "arenaSoundUIFrame", UIParent, "BasicFrameTemplateWithInset")
-    arenaSoundconfig:SetSize(200, 230)
-    arenaSoundconfig:SetPoint("CENTER", UIParent, "CENTER", 0, 120)
+    -- there's practically 0 documentation on this, but you can find some stuff by searching through the wow UI source
+    -- https://github.com/Gethe/wow-ui-source
+    local category, layout = Settings.RegisterVerticalLayoutCategory("Queue Sound")
 
-    -- title
-    arenaSoundconfig.title = arenaSoundconfig:CreateFontString(nil, "OVERLAY")
-    arenaSoundconfig.title:SetFontObject("GameFontHighlight")
-    arenaSoundconfig.title:SetPoint("CENTER", arenaSoundconfig.TitleBg, "CENTER")
-    arenaSoundconfig.title:SetText("Queue Sound Options")
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("PvP"));
+    do
+        do
+            local name = "Shuffle"
+            local variable = "playShuffle"
+            local variableKey = "RATEDSHUFFLE"
+            local defaultValue = true
 
-    -- mainFrame
-    arenaSoundconfig.mainArea = CreateFrame("Frame", nil, arenaSoundconfig)
-    arenaSoundconfig.mainArea:SetSize(180, 190)
-    arenaSoundconfig.mainArea:SetPoint("BOTTOM", arenaSoundconfig, "BOTTOM", 0, 10)
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
 
-    -- arenaToggle
-    arenaSoundconfig.arenaToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.mainArea, "TOPLEFT", "Arena Queue Sound",
-        qsVariableArray["qsArenaState"], "arena");
-    -- skirmishtoggle
-    arenaSoundconfig.shuffleToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.arenaToggle, "BOTTOMLEFT",
-        "Solo Shufffle Queue Sound", qsVariableArray["qsSKRMState"], "skrm");
-    -- bgToggle
-    arenaSoundconfig.bgToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.shuffleToggle, "BOTTOMLEFT",
-        "Battleground Queue Sound", qsVariableArray["qsBGState"], "bg");
-    -- skrmToggle
-    arenaSoundconfig.skrmToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.bgToggle, "BOTTOMLEFT",
-        "Skirmish Queue Sound", qsVariableArray["qsSKRMState"], "skrm");
-    -- lfdToggle
-    arenaSoundconfig.lfdToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.skrmToggle, "BOTTOMLEFT",
-        "Dungeon Queue Sound", qsVariableArray["qsLFDState"], "lfd");
-    --lfrToggle
-    arenaSoundconfig.lfrToggle = self:CreateToggle("TOPLEFT", arenaSoundconfig.lfdToggle, "BOTTOMLEFT", "LFR Queue Sound",
-        qsVariableArray["qsLFRState"], "lfr");
+            local tooltip =
+            "Play a sound on solo shuffle queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+        do
+            local name = "Blitz"
+            local variable = "playBlitz"
+            local variableKey = "RATEDSOLORBG"
+            local defaultValue = true
 
-    arenaSoundconfig:Hide()
-    return arenaSoundconfig
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play a sound on BG Blitz queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+        do
+            local name = "Arena"
+            local variable = "playArena"
+            local variableKey = "ARENA"
+            local defaultValue = true
+
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play a sound on arena queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+        do
+            local name = "Battlegrounds"
+            local variable = "playBattlegrounds"
+            local variableKey = "BATTLEGROUND"
+            local defaultValue = true
+
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play sound on battleground queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+        do
+            local name = "Skirmish"
+            local variable = "playSkirmish"
+            local variableKey = "ARENASKIRMISH"
+            local defaultValue = true
+
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play sound on battleground queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+    end
+
+    layout:AddInitializer(CreateSettingsListSectionHeaderInitializer("PvE"));
+    do
+        do
+            local name = "Looking for Dungeons"
+            local variable = "playDungeons"
+            local variableKey = "LFD"
+            local defaultValue = true
+
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play a sound on dungeon queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+        do
+            local name = "Looking for Raid"
+            local variable = "playRaid"
+            local variableKey = "LFR"
+            local defaultValue = true
+
+            local setting = Settings.RegisterAddOnSetting(category, variable, variableKey,
+                QsVariableArray,
+                type(defaultValue),
+                name, defaultValue)
+
+            local tooltip =
+            "Play a sound on raid queue pop."
+            Settings.CreateCheckbox(category, setting, tooltip)
+        end
+    end
+
+    Settings.RegisterAddOnCategory(category)
+
+    function core.Config:Toggle()
+        Settings.OpenToCategory(category.ID)
+    end
 end

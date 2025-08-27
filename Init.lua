@@ -7,13 +7,13 @@ local songPath = "Interface\\AddOns\\QueueSound\\"
 -- Init
 -- in the initializer we 1: Create our /commands and handle the inputs the user puts behind them
 -- 2: Set our global bools to true if they have not yet been set
+-- ^ might not be required anymore now that we use the proper blizzard settings menu?
 -- 3: Initialize our actual code from Queuesound
--- 4: Initialize our debug code
 -------------------------------
 core.commands = {
-    ["config"] = core.Config.Toggle,
+    ["config"] = function() core.Config:Toggle() end,
     ["vars"] = function()
-        print(core.utils.dump(qsVariableArray));
+        print(DevTools_Dump(QsVariableArray));
     end,
     ["help"] = function()
         print(" ")
@@ -58,31 +58,23 @@ local function slashCommandHandler(str)
 end
 
 local function VarChecker()
-    if qsVariableArray == nil then
-        qsVariableArray = {};
-    end
-    --new state
-    if qsVariableArray["qsShuffleState"] == nil then
-        qsVariableArray["qsShuffleState"] = true;
+    if QsVariableArray == nil then
+        QsVariableArray = {};
     end
     --if theres no arena state: add the arena states
-    if qsVariableArray["qsArenaState"] == nil then
-        qsVariableArray["qsArenaState"] = true;
-        qsVariableArray["qsShuffleState"] = true;
-        qsVariableArray["qsBGState"] = true;
-        qsVariableArray["qsSKRMState"] = true;
-        qsVariableArray["qsLFDState"] = true;
-        qsVariableArray["qsLFRState"] = true;
+    --the pvp names should match the battlegroundtype names
+    --remember to add new settings to config.lua too
+    if QsVariableArray["ARENA"] == nil then
+        QsVariableArray["ARENA"] = true;
+        QsVariableArray["RATEDSHUFFLE"] = true;
+        QsVariableArray["BATTLEGROUND"] = true;
+        QsVariableArray["RATEDSOLORBG"] = true;
+        QsVariableArray["ARENASKIRMISH"] = true;
+        QsVariableArray["LFD"] = true;
+        QsVariableArray["LFR"] = true;
     end
-    --if theres no music states, add the music states
-    -- if qsVariableArray["qsArenaSong"] == nil then
-    qsVariableArray["qsArenaSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    qsVariableArray["qsShuffleSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    qsVariableArray["qsBGSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    qsVariableArray["qsSKRMSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    qsVariableArray["qsLFDSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    qsVariableArray["qsLFRSong"] = songPath .. "RamonesLetsGo" .. ".mp3";
-    -- end
+
+    QsVariableArray["song"] = songPath .. "sound" .. ".mp3";
 end
 
 local function QSDebugMode(debugMode)
@@ -92,7 +84,6 @@ local function QSDebugMode(debugMode)
 
         SLASH_FRAMESTK1 = "/fs" -- For quicker access to frame stack
         SlashCmdList.FRAMESTK = function()
-            LoadAddOn('Blizzard_DebugTools')
             FrameStackTooltip_Toggle()
         end
 
@@ -113,6 +104,7 @@ function core:InitEventHandler(event, name)
     SlashCmdList.QSoundShort = slashCommandHandler
     SLASH_QSound1 = "/QSound"
     SlashCmdList.QSound = slashCommandHandler
+    core.Config:CreateMenu()
     QSDebugMode(false)
 end
 

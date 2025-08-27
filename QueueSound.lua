@@ -7,6 +7,7 @@ local QueueSound = core.QueueSound;
 
 local musicPlay
 local ramonesSoundHandle
+local currentlyPlaying = 0;
 local battlefieldIDs = {};
 -------------------------------
 -- QueueSound
@@ -14,7 +15,6 @@ local battlefieldIDs = {};
 -- 2: Check if the conditions are met to play the sound
 -- 3: Play the actual sounds
 -- To-do: Split checkers into seperate functions for clarity and cleanliness(Arenas don't need to run every single LFR statement vice versa)
--- Create sound for more than one BG type
 -------------------------------
 
 -- The following 2 check your arena and LFG q status
@@ -29,12 +29,13 @@ function QueueSound:lfgStatusChecker()
 end
 
 --Plays the music/stops it depending on what boolean value you enter into the function
-local function arenaPlayMusic(playSound, soundFile)
+local function playSound(playSound, soundFile, id)
     local _
     if playSound == true then
+        currentlyPlaying = id;
         _, ramonesSoundHandle = PlaySoundFile(soundFile, "Master")
     end
-    if playSound == false then
+    if playSound == false and currentlyPlaying == id then
         if ramonesSoundHandle ~= nil then
             StopSound(ramonesSoundHandle)
         end
@@ -42,13 +43,10 @@ local function arenaPlayMusic(playSound, soundFile)
 end
 
 -- queueStatus can return none, queued, confirm or active, none for no current q
--- ratedStatus can return BATTLEGROUND, ARENASKIRMISH, RATEDSHUFFLE or ARENA, nil for no current q
+-- ratedStatus can return BATTLEGROUND, ARENASKIRMISH, RATEDSHUFFLE, RATEDSOLORBG, or ARENA, nil for no current q
 -- dungType can return 1 for normal dungeons, 2 for heroics, 3 for LFR, 4 for scenarios(old) and 5 for flex raids(old), nil for no current q
 -- dungResp can return either true if a response(either accept or decline) has been given, false if no response has been given, nil for no current q
 local function arenaEventHandler(self, event, ...)
-    local arenaToggleState, shuffleToggleState, bgToggleState, skrmToggleState, LFDToggleState, LFRToggleState = core
-        .Config.VarStates();
-    local arenaSong, shuffleSong, bgSong, skrmSong, LFDSong, LFRSong = core.Config.MuscStates();
     if musicPlay == nil then
         musicPlay = false
     end
@@ -61,31 +59,13 @@ local function arenaEventHandler(self, event, ...)
         end
 
         local queueStatus, battlefieldType = core.QueueSound:arenaStatusChecker(i);
-        if queueStatus == "confirm" then
-            if battlefieldType == "ARENA" and arenaToggleState == true then
-                arenaPlayMusic(true, arenaSong)
-                battlefieldIDs[i] = true;
-            end
-            if battlefieldType == "RATEDSHUFFLE" and shuffleToggleState == true then
-                arenaPlayMusic(true, shuffleSong)
-                battlefieldIDs[i] = true;
-            end
-            if battlefieldType == "BATTLEGROUND" and bgToggleState == true then
-                arenaPlayMusic(true, bgSong)
-                battlefieldIDs[i] = true;
-            end
-            if battlefieldType == "BRAWLSOLORBG" and bgToggleState == true then
-                arenaPlayMusic(true, bgSong)
-                battlefieldIDs[i] = true;
-            end
-            if battlefieldType == "ARENASKIRMISH" and skrmToggleState == true then
-                arenaPlayMusic(true, skrmSong)
-                battlefieldIDs[i] = true;
-            end
+        if queueStatus == "confirm" and QsVariableArray[battlefieldType] == true then
+            playSound(true, QsVariableArray.song, i)
+            battlefieldIDs[i] = true;
         end
-        --need to have some kind of "only stop if its the same i that started the music"
+
         if queueStatus ~= "confirm" and battlefieldIDs[i] == true then
-            arenaPlayMusic(false, nil)
+            playSound(false, nil, i)
             battlefieldIDs[i] = false;
         end
     end
@@ -93,17 +73,17 @@ local function arenaEventHandler(self, event, ...)
     --- Dungeon/LFR Checker
     local dungType, dungResp = core.QueueSound:lfgStatusChecker();
     if dungResp == false and dungType > 0 and musicPlay == false then
-        if (dungType == 1 or dungType == 2) and LFDToggleState == true then
-            arenaPlayMusic(true, LFDSong)
+        if (dungType == 1 or dungType == 2) and QsVariableArray.LFD == true then
+            playSound(true, QsVariableArray.song)
             musicPlay = true
         end
-        if dungType >= 3 and LFRToggleState == true then
-            arenaPlayMusic(true, LFRSong)
+        if dungType >= 3 and QsVariableArray.LFR == true then
+            playSound(true, QsVariableArray.song)
             musicPlay = true
         end
     end
     if dungResp == true then
-        arenaPlayMusic(false, nil)
+        playSound(false, nil)
         musicPlay = false
     end
 end

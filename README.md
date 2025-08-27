@@ -6,4 +6,6 @@ Right now, it includes functionality for Arenas, Shuffle, BGs, Skirmish, LFR & L
 
 There's a menu, found via /qs config or /qsound config that shows a simple toggle menu, from which you can individually toggle the sound for the queue types currently available
 
-Known bugs/issues: Doing a /reload whilst the confirm screen is up causes the sound to play twice, overlapping each other, the original one doesn't stop until the clip itself is finished.
+Known bugs/issues:
+- Doing a /reload whilst the confirm screen is up causes the sound to play twice, overlapping each other, the original one doesn't stop until the clip itself is finished.
+- Queueing for other content whilst a confirmation screen is up will cause the audio to play multiple times.

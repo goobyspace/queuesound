@@ -1,12 +1,13 @@
-## Interface: 100207
+## Interface: 110200
 ## Title: Queue Sound
-## Notes: Hey! Hey! Let's go!
-## Version: 1.1
+## Notes: Hey! Ho! Let's go!
+## Version: @project-version@
 ## DefaultState: enabled
-## SavedVariables: qsVariableArray
-## Author: Gooby
+## SavedVariables: QsVariableArray
+## Author: gooby.space
 ## X-Curse-Project-ID: 348102
 ## X-Wago-ID: kGr0qY6y
+## Category: Sound
 
 Utils.lua
 Config.lua
