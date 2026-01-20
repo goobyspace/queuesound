@@ -1,4 +1,4 @@
-## Interface: 110207
+## Interface: 120000, 110207
 ## Title: Queue Sound
 ## Notes: Hey! Ho! Let's go!
 ## Version: @project-version@
@@ -9,7 +9,6 @@
 ## X-Wago-ID: kGr0qY6y
 ## Category: Sound
 
-Utils.lua
 Config.lua
 QueueSound.lua
 Init.lua

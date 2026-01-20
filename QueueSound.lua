@@ -96,3 +96,25 @@ function QueueSound:arenaSoundInit()
     lfdSoundFrame:RegisterEvent("LFG_PROPOSAL_UPDATE")
     lfdSoundFrame:SetScript("OnEvent", arenaEventHandler)
 end
+
+function QueueSound:testAddon()
+    local maxBattlefieldID = GetMaxBattlefieldID();
+    for i = 1, maxBattlefieldID, 1 do
+        if battlefieldIDs[i] == nil then
+            battlefieldIDs[i] = false;
+        end
+
+        local queueStatus, battlefieldType = core.QueueSound:arenaStatusChecker(i);
+        print("----------------------")
+        print("Queue status: " .. (queueStatus or "unknown"))
+        print("Battlefield type: " .. (battlefieldType or "unknown"))
+        print("Checking for: " .. (QsVariableArray[battlefieldType] and "true" or "false"))
+    end
+
+    local dungType, dungResp = core.QueueSound:lfgStatusChecker();
+    print("----------------------")
+    print("Dungeon type: ")
+    print(dungType)
+    print("Dungeon response: ")
+    print(dungResp)
+end

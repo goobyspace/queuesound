@@ -12,6 +12,7 @@ local songPath = "Interface\\AddOns\\QueueSound\\"
 -------------------------------
 core.commands = {
     ["config"] = function() core.Config:Toggle() end,
+    ["test"] = function() core.QueueSound:testAddon() end,
     ["vars"] = function()
         print(DevTools_Dump(QsVariableArray));
     end,
