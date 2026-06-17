@@ -1,4 +1,4 @@
-## Interface: 120005
+## Interface: 120007
 ## Title: Queue Sound
 ## Notes: Hey! Ho! Let's go!
 ## Version: @project-version@
